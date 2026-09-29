@@ -7,6 +7,7 @@ const users = ref<User[]>(usersData as User[])
 
 const formatDate = (iso: string): string => new Date(iso).toLocaleDateString('uk-UA')
 const genderLabel = (g: User['gender']): string => (g === 'male' ? 'Чоловік' : 'Жінка')
+
 const openedIds = ref(new Set<number>())
 
 const toggleDetails = (id: number): void => {
@@ -17,7 +18,17 @@ const toggleDetails = (id: number): void => {
 
 <template>
   <div class="users">
-    <article v-for="user in users" :key="user.id" class="user-card">
+    <article
+      v-for="user in users"
+      :key="user.id"
+      class="user-card"
+      :class="{
+        'user-card--minor': user.dob.age < 18,
+        'user-card--young': user.dob.age >= 18 && user.dob.age <= 30,
+        'user-card--adult': user.dob.age >= 31 && user.dob.age <= 50,
+        'user-card--senior': user.dob.age > 50,
+      }"
+    >
       <img
         class="user-card__photo"
         :src="user.picture"
@@ -30,8 +41,20 @@ const toggleDetails = (id: number): void => {
         <li><b>Email:</b> {{ user.email }}</li>
         <li><b>Телефон:</b> {{ user.phone }}</li>
         <li><b>Дата народження:</b> {{ formatDate(user.dob.date) }}</li>
-        <li><b>Вік:</b> {{ user.dob.age }}</li>
+        <li v-if="user.dob.age > 18"><b>Вік:</b> {{ user.dob.age }}</li>
       </ul>
+
+      <div class="user-card__hobbies">
+        <b>Хобі:</b>
+        <ul>
+          <li v-for="hobby in user.hobbies" :key="hobby">{{ hobby }}</li>
+        </ul>
+      </div>
+
+      <button class="user-card__toggle" @click="toggleDetails(user.id)">
+        {{ openedIds.has(user.id) ? 'Сховати' : 'Детальніше' }}
+      </button>
+      <p v-show="openedIds.has(user.id)" class="user-card__details">{{ user.details }}</p>
     </article>
   </div>
 </template>
@@ -60,6 +83,26 @@ const toggleDetails = (id: number): void => {
   transform: translateY(-4px);
 }
 
+.user-card--minor {
+  background: #e3f2fd;
+  border-color: #64b5f6;
+}
+
+.user-card--young {
+  background: #e8f5e9;
+  border-color: #66bb6a;
+}
+
+.user-card--adult {
+  background: #fff8e1;
+  border-color: #ffca28;
+}
+
+.user-card--senior {
+  background: #fce4ec;
+  border-color: #ec407a;
+}
+
 .user-card__photo {
   width: 120px;
   height: 120px;
@@ -86,5 +129,38 @@ const toggleDetails = (id: number): void => {
 .user-card__info li {
   padding: 4px 0;
   border-bottom: 1px solid #f0f0f0;
+}
+
+.user-card__hobbies {
+  width: 100%;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.user-card__hobbies ul {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}
+
+.user-card__toggle {
+  margin-top: 12px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #42b883;
+  color: #fff;
+  cursor: pointer;
+}
+
+.user-card__toggle:hover {
+  background: #369870;
+}
+
+.user-card__details {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+  color: #555;
+  text-align: center;
 }
 </style>
