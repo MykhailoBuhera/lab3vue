@@ -15,15 +15,42 @@ const toggleDetails = (id: number): void => {
   if (openedIds.value.has(id)) openedIds.value.delete(id)
   else openedIds.value.add(id)
 }
+
+type GenderFilter = 'all' | User['gender']
+
+const genderFilter = ref<GenderFilter>('all')
+const adultsOnly = ref(false)
+
+const visibleUsers = computed(() =>
+  users.value.filter(
+    (u) =>
+      (genderFilter.value === 'all' || u.gender === genderFilter.value) &&
+      (!adultsOnly.value || u.dob.age >= 18),
+  ),
+)
 </script>
 
 <template>
-  <p v-if="!users.length" class="users__empty">Список юзерів пустий</p>
-    <div v-else class="users">
-    <article
-      v-for="user in users"
-      :key="user.id"
-      class="user-card"
+    <div class="toolbar">
+  <div class="toolbar__group">
+    <span class="toolbar__label">Стать:</span>
+    <button :class="{ active: genderFilter === 'all' }" @click="genderFilter = 'all'">Всі</button>
+    <button :class="{ active: genderFilter === 'male' }" @click="genderFilter = 'male'">Чоловіки</button>
+    <button :class="{ active: genderFilter === 'female' }" @click="genderFilter = 'female'">Жінки</button>
+  </div>
+  <div class="toolbar__group">
+    <span class="toolbar__label">Вік:</span>
+    <button :class="{ active: !adultsOnly }" @click="adultsOnly = false">Всі</button>
+    <button :class="{ active: adultsOnly }" @click="adultsOnly = true">18+</button>
+  </div>
+</div>
+
+<p v-if="!visibleUsers.length" class="users__empty">Список юзерів пустий</p>
+<div v-else class="users">
+  <article
+    v-for="user in visibleUsers"
+    :key="user.id"
+    class="user-card"
       :class="{
         'user-card--minor': user.dob.age < 18,
         'user-card--young': user.dob.age >= 18 && user.dob.age <= 30,
@@ -172,5 +199,42 @@ const toggleDetails = (id: number): void => {
   font-size: 0.85rem;
   color: #555;
   text-align: center;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px 20px 0;
+}
+
+.toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar__label {
+  font-weight: 600;
+  color: #333;
+}
+
+.toolbar button {
+  padding: 6px 14px;
+  border: 1px solid #42b883;
+  border-radius: 6px;
+  background: #fff;
+  color: #42b883;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.toolbar button:hover {
+  background: #e8f5e9;
+}
+
+.toolbar button.active {
+  background: #42b883;
+  color: #fff;
 }
 </style>
