@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { User } from '@/types/user'
 import usersData from '@/data/users.json'
+
 
 const users = ref<User[]>(usersData as User[])
 
@@ -17,7 +18,8 @@ const toggleDetails = (id: number): void => {
 </script>
 
 <template>
-  <div class="users">
+  <p v-if="!users.length" class="users__empty">Список юзерів пустий</p>
+    <div v-else class="users">
     <article
       v-for="user in users"
       :key="user.id"
@@ -155,6 +157,14 @@ const toggleDetails = (id: number): void => {
 
 .user-card__toggle:hover {
   background: #369870;
+}
+
+
+.users__empty {
+  padding: 40px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #888;
 }
 
 .user-card__details {
