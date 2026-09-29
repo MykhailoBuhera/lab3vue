@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "gender": "male",
+    "name": { "title": "Mr", "first": "Олег", "last": "Коваль" },
+    "location": { "city": "Чернівці", "country": "Україна" },
+    "email": "oleg.koval@example.com",
+    "phone": "+380 67 123 4567",
+    "picture": "https://randomuser.me/api/portraits/men/1.jpg",
+    "dob": { "date": "1995-04-12T00:00:00.000Z", "age": 31 },
+    "hobbies": ["Футбол", "Програмування", "Подорожі"],
+    "details": "Backend-розробник, любить гори та каву."
+  }
+]
